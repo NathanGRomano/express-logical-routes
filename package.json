@@ -1,0 +1,33 @@
+{
+  "name": "express-logical-routes",
+  "version": "0.0.1",
+  "author": "Nathan Romano <nathan.g.romano@gmail.com>",
+  "description": "a way of adding logic to your routes in a declarative way",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha test --ui bdd -R spec"
+  },
+  "main": "./lib",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NathanGRomano/express-logical-routes.git"
+  },
+  "keywords": [
+		"express",
+		"logic",
+		"routes"
+  ],
+  "dependencies" : {
+		"async":"0.2.9"
+  },
+  "analyze": false,
+  "devDependencies": {
+		"mocha":"1.12.0",
+		"express":"3.3.5",
+		"supertest":"0.7.1"
+  },
+  "bundledDependencies": [ ],  
+  "license": "MIT",
+  "engines": {
+    "node": ">=0.6"
+  }
+}
