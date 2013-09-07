@@ -1,6 +1,5 @@
 var assert = require('assert')
 	, request = require('supertest')
-	, async = require('async')
 	, express = require('express')
 	, or = require('../.').or 
 
@@ -31,3 +30,7 @@ function isTrue (req, res, next) {
 	next(true);
 }
 
+function done (err, req, res, next) {
+	if (err instanceof Error) return res.json({ok:false, error:err})
+	req.json({ok:true});
+}
