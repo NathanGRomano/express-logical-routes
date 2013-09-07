@@ -24,10 +24,32 @@ describe('the or() method', function () {
 
 	});
 
+	describe('when invoked with middleware isTrue, and isFalse', function () {
+
+		app = express();
+		app.get('/test', or(isTrue, isFalse), done);
+
+		it('then should invoke our last handler with the value of true', function (done) {
+
+			request(app)
+				.get('/test')
+				.end(function (err, res) {
+					assert.equal(res.body.ok, true);
+					done();
+				});
+
+		});
+
+	});
+
 });
 
 function isTrue (req, res, next) {
 	next(true);
+}
+
+function isFalse (req, res, next) {
+	next(false);
 }
 
 function done (err, req, res) {
