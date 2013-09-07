@@ -31,20 +31,27 @@ Instead of doing something along these lines:
 
 We can do this
 
-    app.put('/user/:id/edit', getUser, or(isAdmin, isSameUser), function (req, res) {
+    app.put('/user/:id/edit', getUser, or(isAdmin, isSameUser).then(editUser))
+
+    app.post('/user/:id/items', getUser, or(isAdmin, isSameUser).then(addItem))
+
+		function editUser (err, req, res, next) {
+			if (err) next(err);
       util.extend(req.user, req.body)
       req.user.save(function (err) {
         res.redirect('/user/'+req.user.id);
       })
-    })
+    }
 
-    app.post('/user/:id/items', getUser, or(isAdmin, isSameUser), function (req, res) {
+		function addItem (err, req, res, next) {
+			if (err) return next(err);
       UserItem(req.body).save(function (err, doc) {
         res.redirect('/user/'+req.user.id+'/item/'+doc._id);
       })
-    })
+    }
 
     function isAdmin (req, res, next) {
+
       next(req.currentUser.isAdmin);
     }
 
@@ -52,7 +59,7 @@ We can do this
       next(req.currentUser.id == req.user.id);
     }
 
-Or better yet
+Or even 
 
     var getAndValidateUser = [getUser, or(isAdmin, isSameUser)];
     
