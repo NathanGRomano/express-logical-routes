@@ -9,7 +9,7 @@ describe('the or() method', function () {
 	describe('when invoked with middleware isTrue, and isTrue', function () {
 
 		var app = express();
-		app.get('/test', or(isTrue, isTrue), done);
+		app.get('/test', or(isTrue, isTrue).then(done));
 
 		it('then should invoke our last handler with the value of true', function (done) {
 
@@ -28,7 +28,7 @@ describe('the or() method', function () {
 	describe('when invoked with middleware isTrue, and isFalse', function () {
 
 		var app = express();
-		app.get('/test', or(isTrue, isFalse), done);
+		app.get('/test', or(isTrue, isFalse).then(done));
 
 		it('then should invoke our last handler with the value of true', function (done) {
 
@@ -46,7 +46,7 @@ describe('the or() method', function () {
 	describe('when invoked with middleware isFalse, and isTrue', function () {
 
 		var app = express();
-		app.get('/test', or(isFalse, isTrue), done);
+		app.get('/test', or(isFalse, isTrue).then(done));
 
 		it('then should invoke our last handler with the value of true', function (done) {
 
@@ -119,6 +119,6 @@ function done (err, req, res) {
 	if (err instanceof Error) {
 		return res.json({ok:false, error:err})
 	}
-	req.json({ok:true});
+	res.json({ok:true});
 }
 
