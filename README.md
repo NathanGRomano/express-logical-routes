@@ -1,7 +1,8 @@
 # Express Logical Routes (WIP)
 
+A library built on top of async to apply business rules to routes as middleware.
 
-Now you can reuse your business rules all over the place
+Now you can reuse your business rules all over the place.
 
 ## Getting Started
 
