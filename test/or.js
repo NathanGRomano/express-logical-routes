@@ -9,7 +9,7 @@ describe('the or() method', function () {
 	describe('when invoked with middleware isTrue, and isTrue', function () {
 
 		app = express();
-		app.get('/test', or(isTrue, isTrue), done );
+		app.get('/test', or(isTrue, isTrue), done);
 
 		it('then should invoke our last handler with the value of true', function (done) {
 
@@ -30,7 +30,7 @@ function isTrue (req, res, next) {
 	next(true);
 }
 
-function done (err, req, res, next) {
+function done (err, req, res) {
 	if (err instanceof Error) return res.json({ok:false, error:err})
 	req.json({ok:true});
 }
