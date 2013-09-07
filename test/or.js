@@ -16,6 +16,7 @@ describe('the or() method', function () {
 			request(app)
 				.get('/test')
 				.end(function (err, res) {
+					if (err) return done(err);
 					assert.equal(res.body.ok, true);
 					done();
 				});
@@ -52,6 +53,7 @@ describe('the or() method', function () {
 			request(app)
 				.get('/test')
 				.end(function (err, res) {
+					if (err) return done(err);
 					assert.equal(res.body.ok, true);
 					done();
 				});
@@ -70,6 +72,7 @@ describe('the or() method', function () {
 			request(app)
 				.get('/test')
 				.end(function (err, res) {
+					if (err) return done(err);
 					assert.equal(res.body.ok, false);
 					done();
 				});
@@ -79,6 +82,30 @@ describe('the or() method', function () {
 	});
 
 });
+
+describe('the return function of or().then(fn)', function () {
+	
+	describe('when being invoked', function () {
+
+		var app = express();
+		app.get('/test', or(isFalse, isFalse).then(done) );
+
+		it('fn() should be invoked', function (done) {
+
+			request(app)
+				.get('/test')
+				.end(function (err, res) {
+					if (err) return done(err);
+					assert.equal(res.body.ok, false);
+					done();
+				});
+
+		});
+
+	});
+
+});
+
 
 function isTrue (req, res, next) {
 	next(true);
