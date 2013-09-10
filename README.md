@@ -12,83 +12,83 @@ Now you can reuse your business rules all over the place.
 Instead of doing something along these lines:
 
 ```javascript
-    app.put('/user/:id/edit', getUser, function (req, res) {
-      if (!(req.currentUser.isAdmin || req.currentUser.id == req.user.id))
-	return new Error('Unauthorized')
-      util.extend(req.user, req.body)
-      req.user.save(function (err) {
-        res.redirect('/user/'+req.user.id);
-      })
-    })
+app.put('/user/:id/edit', getUser, function (req, res) {
+	if (!(req.currentUser.isAdmin || req.currentUser.id == req.user.id))
+		return next(Error('Unauthorized'))
+	util.extend(req.user, req.body)
+	req.user.save(function (err) {
+		res.redirect('/user/'+req.user.id);
+	})
+})
 
-    app.post('/user/:id/items', getUser, function (req, res) {
-      if (!(req.currentUser.isAdmin || req.currentUser.id == req.user.id))
-	return new Error('Unauthorized')
-      UserItem(req.body).save(function (err, doc) {
-        res.redirect('/user/'+req.user.id+'/item/'+doc._id);
-      })
-    })
+app.post('/user/:id/items', getUser, function (req, res) {
+	if (!(req.currentUser.isAdmin || req.currentUser.id == req.user.id))
+		return next(Error('Unauthorized'))
+	UserItem(req.body).save(function (err, doc) {
+		res.redirect('/user/'+req.user.id+'/item/'+doc._id);
+	})
+})
 
-    //And so on!
+//And so on!
 ```
 
 We can do this
 
 ```javascript
-    app.put('/user/:id/edit', getUser, or(isAdmin, isSameUser).then(editUser))
+app.put('/user/:id/edit', getUser, or(isAdmin, isSameUser).then(editUser))
 
-    app.post('/user/:id/items', getUser, or(isAdmin, isSameUser).then(addItem))
+app.post('/user/:id/items', getUser, or(isAdmin, isSameUser).then(addItem))
 
-		function editUser (err, req, res, next) {
-			if (err) next(err);
-      util.extend(req.user, req.body)
-      req.user.save(function (err) {
-        res.redirect('/user/'+req.user.id);
-      })
-    }
+function editUser (err, req, res, next) {
+	if (err) next(err);
+	util.extend(req.user, req.body)
+	req.user.save(function (err) {
+		res.redirect('/user/'+req.user.id);
+	})
+}
 
-		function addItem (err, req, res, next) {
-			if (err) return next(err);
-      UserItem(req.body).save(function (err, doc) {
-        res.redirect('/user/'+req.user.id+'/item/'+doc._id);
-      })
-    }
+function addItem (err, req, res, next) {
+	if (err) return next(err);
+	UserItem(req.body).save(function (err, doc) {
+		res.redirect('/user/'+req.user.id+'/item/'+doc._id);
+	})
+}
 
-    function isAdmin (req, res, next) {
+function isAdmin (req, res, next) {
 
-      next(req.currentUser.isAdmin);
-    }
+	next(req.currentUser.isAdmin);
+}
 
-    function isSameUser (req, res, next) {
-      next(req.currentUser.id == req.user.id);
-    }
+function isSameUser (req, res, next) {
+	next(req.currentUser.id == req.user.id);
+}
 ```
 
 Or even 
 
 ```javascript
-    var getAndValidateUser = [getUser, or(isAdmin, isSameUser)];
-    
-    app.put('/user/:id/edit', getAndValidateUser , function (req, res) {
-      util.extend(req.user, req.body)
-      req.user.save(function (err) {
-        res.redirect('/user/'+req.user.id);
-      })
-    })
+var getAndValidateUser = [getUser, or(isAdmin, isSameUser)];
 
-    app.post('/user/:id/items', getAndValidateUser, function (req, res) {
-      UserItem(req.body).save(function (err, doc) {
-        res.redirect('/user/'+req.user.id+'/item/'+doc._id);
-      })
-    })
+app.put('/user/:id/edit', getAndValidateUser , function (req, res) {
+	util.extend(req.user, req.body)
+	req.user.save(function (err) {
+		res.redirect('/user/'+req.user.id);
+	})
+})
 
-    function isAdmin (req, res, next) {
-      next(req.currentUser.isAdmin);
-    }
+app.post('/user/:id/items', getAndValidateUser, function (req, res) {
+	UserItem(req.body).save(function (err, doc) {
+		res.redirect('/user/'+req.user.id+'/item/'+doc._id);
+	})
+})
 
-    function isSameUser (req, res, next) {
-      next(req.currentUser.id == req.user.id);
-    }
+function isAdmin (req, res, next) {
+	next(req.currentUser.isAdmin);
+}
+
+function isSameUser (req, res, next) {
+	next(req.currentUser.id == req.user.id);
+}
 ```
 
 ## API
@@ -100,8 +100,8 @@ This method will build us a function that will internally used the passed async 
 e.g.
 
 ```javascript
-    var every = fn('every')
-		  , validUser = every( isLoggedIn, isAllowed )
+var every = fn('every')
+	, validUser = every( isLoggedIn, isAllowed )
 ```
 
 This object has the following chainable methods 
@@ -111,7 +111,7 @@ This object has the following chainable methods
 When the operation succeeds, the passed method will be called
 
 ```javascript
-    validUser.succeed(function (req, res, next) { /* do something */ next() })
+validUser.succeed(function (req, res, next) { /* do something */ next() })
 ```
 
 #### failure(fn)
@@ -119,20 +119,22 @@ When the operation succeeds, the passed method will be called
 When the operation fails, the passed method will be called
 
 ```javascript
-    validUser.failure(function (req, res, next) { /* do something with the errors */ next() })
+validUser.failure(function (req, res, next) { /* do something with the errors */ next() })
 ```
 
 The errors are stored on the request object
 
 ```javascript
-    every.failure(function (req, res, next) {
-			res.status(400).json(req.errors);
-		});
+every.failure(function (req, res, next) {
+	res.status(400).json(req.errors);
+});
 ```
 
 #### then(fn)
 
 After the succeed() or failure() method is called then the fn() passed will be called
 
-    validUser.succeed(function (req, res, next) { req.awesome = true; }).then(function (req,res) { res.json({awesome:req.awesome}) })
+```javascript
+validUser.succeed(function (req, res, next) { req.awesome = true; }).then(function (req,res) { res.json({awesome:req.awesome}) })
+```
 
