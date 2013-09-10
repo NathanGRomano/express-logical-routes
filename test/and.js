@@ -66,7 +66,7 @@ describe('the and() method', function () {
 	describe('when invoked with middleware isFalse, and isFalse', function () {
 
 		var app = express();
-		app.get('/test', and(isFalse, isFalse).then(done) );
+		app.get('/test', and(isFalse, isFalse), done );
 
 		it('then should invoke our last handler with the value of false', function (done) {
 
