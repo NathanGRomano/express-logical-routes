@@ -44,7 +44,7 @@ describe('given an attached failure() method to the middleware() instance', func
 		var app = express();
 		app.get('/test', fn('some')(isFalse, isFalse).failure(failure).then(done))
 
-		it('the the failure() method should be triggered', function (done) {
+		it('then the failure() method should be triggered', function (done) {
 
 			request(app)
 				.get('/test')
@@ -52,6 +52,29 @@ describe('given an attached failure() method to the middleware() instance', func
 					if (err) return done(err);
 					assert.equal(res.body.ok, false);
 					done();
+				});
+
+		});
+
+	});
+
+});
+
+describe('given an attached then() method to the middleware() instance', function ( ){
+
+	describe('when middleware() is invoked', function () {
+
+		var app = express();
+		app.get('/test', fn('some')(isFalse, isFalse).failure(failure).then(done))
+
+		it('then the done() method should triggered', function (done) {
+
+			request(app)
+				.get('/test')
+				.end(function (err, res) {
+					if (err) return done(err)
+					assert.equal(res.body.ok, false)
+					done()
 				});
 
 		});
