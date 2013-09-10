@@ -9,86 +9,98 @@ Now you can reuse your business rules all over the place.
      npm install
      npm test
 
-Instead of doing something along these lines:
+Typically writing business rules in your routes may look like this.
 
 ```javascript
-app.put('/user/:id/edit', getUser, function (req, res) {
+app.put('/user/:id/edit', getUser, editUser )
+
+app.post('/user/:id/items', getUser, addItem )
+
+function editUser (req, res) {
 	if (!(req.currentUser.isAdmin || req.currentUser.id == req.user.id))
 		return next(Error('Unauthorized'))
 	util.extend(req.user, req.body)
 	req.user.save(function (err) {
 		res.redirect('/user/'+req.user.id);
 	})
-})
+}
 
-app.post('/user/:id/items', getUser, function (req, res) {
+function addItem (req, res) {
 	if (!(req.currentUser.isAdmin || req.currentUser.id == req.user.id))
 		return next(Error('Unauthorized'))
 	UserItem(req.body).save(function (err, doc) {
 		res.redirect('/user/'+req.user.id+'/item/'+doc._id);
 	})
-})
+}
 
 //And so on!
 ```
 
-We can do this
+Notice we have duplicated this line 
+
+```javascript
+if (!(req.currentUser.isAdmin || req.currentUser.id == req.user.id))
+	return next(Error('Unauthorized'))
+```
+
+Instead of copying and pasting that logic around we can put it into middleware functions 
+
+```javascript
+var isAdmin = function (req, res, next) { next(req.user.isAdmin) }
+  , isSameUser = function (req, res, next) { next(req.user.id == req.target.id) }
+```
+
+Now lets wrap those logical tests into an or() 
 
 ```javascript
 app.put('/user/:id/edit', getUser, or(isAdmin, isSameUser).then(editUser))
 
 app.post('/user/:id/items', getUser, or(isAdmin, isSameUser).then(addItem))
 
-function editUser (err, req, res, next) {
-	if (err) next(err);
+//we took out the busness logic out of our domain logic
+
+function editUser (req, res, next) {
 	util.extend(req.user, req.body)
 	req.user.save(function (err) {
 		res.redirect('/user/'+req.user.id);
 	})
 }
 
-function addItem (err, req, res, next) {
-	if (err) return next(err);
+function addItem (req, res, next) {
 	UserItem(req.body).save(function (err, doc) {
 		res.redirect('/user/'+req.user.id+'/item/'+doc._id);
 	})
-}
-
-function isAdmin (req, res, next) {
-
-	next(req.currentUser.isAdmin);
-}
-
-function isSameUser (req, res, next) {
-	next(req.currentUser.id == req.user.id);
 }
 ```
 
-Or even 
+Or we could combine the isAdmin and isSameUser into a middleware
 
 ```javascript
-var getAndValidateUser = [getUser, or(isAdmin, isSameUser)];
+var isValidUser = or(isAdmin, isSameUser)
+```
+and then apply it
 
-app.put('/user/:id/edit', getAndValidateUser , function (req, res) {
-	util.extend(req.user, req.body)
-	req.user.save(function (err) {
-		res.redirect('/user/'+req.user.id);
-	})
-})
+```javascript
+app.put('/user/:id/edit', getUser, isValidUser.succeed(editUser))
 
-app.post('/user/:id/items', getAndValidateUser, function (req, res) {
-	UserItem(req.body).save(function (err, doc) {
-		res.redirect('/user/'+req.user.id+'/item/'+doc._id);
-	})
-})
+app.post('/user/:id/items', getUser, isValidUser.succeed(addItem))
+```
+Here we used the "succeed()" method to editUser and addItem, we can also support a failure
 
-function isAdmin (req, res, next) {
-	next(req.currentUser.isAdmin);
-}
+```javascript
+app.put('/user/:id/edit', getUser, isValidUser.succeed(editUser).failure(goAway))
 
-function isSameUser (req, res, next) {
-	next(req.currentUser.id == req.user.id);
-}
+app.post('/user/:id/items', getUser, isValidUser.succeed(addItem).failure(goAway))
+```
+
+Say we want to combine all this logic into a single object
+
+```javascript
+var getAndValidateUser = [getUser, or(isAdmin, isSameUser).failure(goAway)];
+
+app.put('/user/:id/edit', getAndValidateUser , editUser)
+
+app.post('/user/:id/items', getAndValidateUser, addItem)
 ```
 
 ## API

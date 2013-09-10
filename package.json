@@ -1,8 +1,8 @@
 {
   "name": "express-logical-routes",
   "version": "0.0.1",
-  "author": "Nathan Romano <nathan.g.romano@gmail.com>",
-  "description": "a way of adding logic to your routes in a declarative way",
+  "author": "Nathan Romano <nathan.g.romano@gmail.com> (https://github.com/NathanGRomano)",
+  "description": "A way of adding logic to your routes in a declarative way",
   "scripts": {
     "test": "./node_modules/.bin/mocha test --ui bdd -R spec"
   },
