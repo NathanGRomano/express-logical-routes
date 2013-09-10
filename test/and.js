@@ -35,6 +35,7 @@ describe('the and() method', function () {
 			request(app)
 				.get('/test')
 				.end(function (err, res) {
+					if (err) return done(err)
 					assert.equal(res.body.ok, false);
 					done();
 				});
@@ -115,10 +116,7 @@ function isFalse (req, res, next) {
 	next(false);
 }
 
-function done (err, req, res) {
-	if (err instanceof Error) {
-		return res.json({ok:false, error:err})
-	}
-	res.json({ok:true});
+function done (req, res) {
+	res.json({ok:req.errors ? false : true});
 }
 
