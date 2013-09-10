@@ -11,6 +11,7 @@ Now you can reuse your business rules all over the place.
 
 Instead of doing something along these lines:
 
+```javascript
     app.put('/user/:id/edit', getUser, function (req, res) {
       if (!(req.currentUser.isAdmin || req.currentUser.id == req.user.id))
 	return new Error('Unauthorized')
@@ -29,9 +30,11 @@ Instead of doing something along these lines:
     })
 
     //And so on!
+```
 
 We can do this
 
+```javascript
     app.put('/user/:id/edit', getUser, or(isAdmin, isSameUser).then(editUser))
 
     app.post('/user/:id/items', getUser, or(isAdmin, isSameUser).then(addItem))
@@ -59,9 +62,11 @@ We can do this
     function isSameUser (req, res, next) {
       next(req.currentUser.id == req.user.id);
     }
+```
 
 Or even 
 
+```javascript
     var getAndValidateUser = [getUser, or(isAdmin, isSameUser)];
     
     app.put('/user/:id/edit', getAndValidateUser , function (req, res) {
@@ -84,4 +89,50 @@ Or even
     function isSameUser (req, res, next) {
       next(req.currentUser.id == req.user.id);
     }
+```
+
+## API
+
+### fn(method)
+
+This method will build us a function that will internally used the passed async method
+
+e.g.
+
+```javascript
+    var every = fn('every')
+		  , validUser = every( isLoggedIn, isAllowed )
+```
+
+This object has the following chainable methods 
+
+#### succeed(fn)
+
+When the operation succeeds, the passed method will be called
+
+```javascript
+    validUser.succeed(function (req, res, next) { /* do something */ next() })
+```
+
+#### failure(fn)
+
+When the operation fails, the passed method will be called
+
+```javascript
+    validUser.failure(function (req, res, next) { /* do something with the errors */ next() })
+```
+
+The errors are stored on the request object
+
+```javascript
+    every.failure(function (req, res, next) {
+			res.status(400).json(req.errors);
+		});
+```
+
+#### then(fn)
+
+After the succeed() or failure() method is called then the fn() passed will be called
+
+    validUser.succeed(function (req, res, next) { req.awesome = true; }).then(function (req,res) { res.json({awesome:req.awesome}) })
 
