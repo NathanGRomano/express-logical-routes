@@ -35,6 +35,7 @@ describe('the or() method', function () {
 			request(app)
 				.get('/test')
 				.end(function (err, res) {
+					if (err) return done(err)
 					assert.equal(res.body.ok, true);
 					done();
 				});
@@ -65,7 +66,7 @@ describe('the or() method', function () {
 	describe('when invoked with middleware isFalse, and isFalse', function () {
 
 		var app = express();
-		app.get('/test', or(isFalse, isFalse), function (err, req, res, next) { done(err, res, res); } );
+		app.get('/test', or(isFalse, isFalse), done );
 
 		it('then should invoke our last handler with the value of false', function (done) {
 
@@ -115,10 +116,7 @@ function isFalse (req, res, next) {
 	next(false);
 }
 
-function done (err, req, res) {
-	if (err instanceof Error) {
-		return res.json({ok:false, error:err})
-	}
-	res.json({ok:true});
+function done (req, res) {
+	res.json({ok:req.errors ? false : true});
 }
 
