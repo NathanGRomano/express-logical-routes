@@ -138,3 +138,36 @@ After the succeed() or failure() method is called then the fn() passed will be c
 validUser.succeed(function (req, res, next) { req.awesome = true; }).then(function (req,res) { res.json({awesome:req.awesome}) })
 ```
 
+### and(...)
+
+This method will produce an object with the same chainable functions as the result of fn('every')
+
+```javascript
+var validUser = and (isLoggedIn, isAllowedToView)
+	.failure(function (req, res) { 
+		res.status(403).json(req.errors)
+	})
+
+app.get('/resource/:id', validUser, getResource);
+```
+
+### or(...)
+
+This method will produce an object with the same chainable functions as the result of fn('some')
+
+```javascript
+var validUser = or (isAdmin, isAllowedToView )
+
+app.get('/resource/:id', validUser, getResource);
+```
+
+### not(...)
+
+This method will produce an object with the same chainable functions as the result of fn('every') but only supports
+one middleware function
+
+```javascript
+var notLoggedIn = not(isLoggedIn);
+
+app.get('/resource/:id', notLoggedIn.succeed(showLogin), validUser, getResource);
+```
