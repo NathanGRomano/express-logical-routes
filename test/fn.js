@@ -38,6 +38,29 @@ describe('given an attached succeed() method to the middleware() instance', func
 
 });
 
+describe('given an attached failure() method to the middleware() instance', function () {
+
+	describe('when middleware() is invoked', function () {
+
+		it('the the failure() method should be triggered', function (done) {
+
+			var app = express();
+			app.get('/test', middleware(isFalse, isFalse).failure(failure))
+
+			request(app)
+				.get('/test')
+				.end(function (err, res) {
+					if (err) return done(err);
+					assert.equal(res.body.ok, false);
+					done();
+				});
+
+		});
+
+	});
+
+});
+
 function succeed (req, res, next) {
 	res.json({ok:true})
 }
