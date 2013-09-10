@@ -135,7 +135,13 @@ every.failure(function (req, res, next) {
 After the succeed() or failure() method is called then the fn() passed will be called
 
 ```javascript
-validUser.succeed(function (req, res, next) { req.awesome = true; }).then(function (req,res) { res.json({awesome:req.awesome}) })
+validUser
+	.succeed(function (req, res, next) { 
+		req.awesome = true
+	})
+	.then(function (req,res) { 
+		res.json({awesome:req.awesome}) 
+	})
 ```
 
 ### and(...)
