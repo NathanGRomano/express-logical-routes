@@ -16,7 +16,7 @@ describe('the not() method', function () {
 				.get('/test')
 				.end(function (err, res) {
 					if (err) return done(err)
-					assert.equal(res.ok, false)
+					assert.equal(res.body.ok, false)
 					done();
 				})
 
@@ -35,7 +35,7 @@ describe('the not() method', function () {
 				.get('/test')
 				.end(function (err, res) {
 					if (err) return done(err)
-					assert.equal(res.ok, true)
+					assert.equal(res.body.ok, true)
 					done();
 				})
 
@@ -47,3 +47,4 @@ describe('the not() method', function () {
 
 function isTrue (req, res, next) { next(true) }
 function isFalse (req, res, next) { next(false) }
+function done (req, res) { res.json({ok:req.errors ? false : true}) }
