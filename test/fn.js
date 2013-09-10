@@ -21,12 +21,8 @@ describe('given an attached succeed() method to the middleware() instance', func
 
 		it('the the succeed() method should be triggered', function (done) {
 
-			middleware(isTrue, isFalse).succeed(function (err, req, res, next) {
-				res.json({ok:true});
-			});
-
 			var app = express();
-			app.get('/test', middleware);
+			app.get('/test', middleware(isTrue, isFalse).succeed(succeed))
 
 			request(app)
 				.get('/test')
@@ -41,6 +37,14 @@ describe('given an attached succeed() method to the middleware() instance', func
 	});
 
 });
+
+function succeed (req, res, next) {
+	res.json({ok:true})
+}
+
+function failure (err, req, res, next) {
+	res.json({ok:false})
+}
 
 function isTrue (req, res, next) {
 	next(true);
