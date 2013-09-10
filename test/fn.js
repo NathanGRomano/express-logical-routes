@@ -3,12 +3,11 @@ var assert = require('assert')
   , express = require('express')
 	, fn = require('../.').fn 
 
-var middleware;
 
 describe('fn()', function () {
 	describe('when instantiating with "some"', function () {
 		it('should create a new function to be used as middleware', function (done) {
-			middleware = fn('some');	
+			var middleware = fn('some');	
 			done();
 		});
 	});
@@ -18,11 +17,11 @@ describe('fn()', function () {
 describe('given an attached succeed() method to the middleware() instance', function () {
 
 	describe('when middleware() is invoked', function () {
+			
+		var app = express();
+		app.get('/test', fn('some')(isTrue, isFalse).succeed(succeed).then(done))
 
 		it('the the succeed() method should be triggered', function (done) {
-
-			var app = express();
-			app.get('/test', middleware(isTrue, isFalse).succeed(succeed))
 
 			request(app)
 				.get('/test')
@@ -42,10 +41,10 @@ describe('given an attached failure() method to the middleware() instance', func
 
 	describe('when middleware() is invoked', function () {
 
-		it('the the failure() method should be triggered', function (done) {
+		var app = express();
+		app.get('/test', fn('some')(isFalse, isFalse).failure(failure).then(done))
 
-			var app = express();
-			app.get('/test', middleware(isFalse, isFalse).failure(failure))
+		it('the the failure() method should be triggered', function (done) {
 
 			request(app)
 				.get('/test')
@@ -62,11 +61,17 @@ describe('given an attached failure() method to the middleware() instance', func
 });
 
 function succeed (req, res, next) {
-	res.json({ok:true})
+	req.ok = true;
+	next()
 }
 
-function failure (err, req, res, next) {
-	res.json({ok:false})
+function failure (req, res, next) {
+	req.ok = false;
+	next()
+}
+
+function done (req, res) {
+	res.json({ok:req.ok});
 }
 
 function isTrue (req, res, next) {
