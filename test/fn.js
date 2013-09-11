@@ -83,6 +83,76 @@ describe('given an attached then() method to the middleware() instance', functio
 
 });
 
+describe('given a middleware', function () {
+
+	var some = fn('some')
+		, middleware = some(isFalse, isTrue).then(function (req, res, next) { res.json({ok:req.worked}) })
+
+	describe('when invoked', function () {
+
+		it('should give an undefined value because it was not set via success() or failure()', function(done) {
+
+			var app = express()
+			app.get('/test', middleware)
+
+			request(app)
+				.get('/test')
+				.end(function (err, res) {
+					assert.equal(res.body.ok, undefined);
+					done();
+				});
+			
+		});
+
+	});
+
+	describe('calling the middleware with no args', function () {
+
+		it('should give us a new method and when invoked does the same thing', function (done) {
+
+			var test = middleware()
+
+			var app = express()
+			app.get('/test', test)
+
+			request(app)
+				.get('/test')
+				.end(function (err, res) {
+					assert.equal(res.body.ok, undefined);
+					done();
+				});
+
+		});
+
+	});
+
+	describe('calling the middleware with no args with a success() method', function () {
+
+		it('should give us a new method and when invoked should give us a true result', function (done) {
+
+			var test = middleware()
+			test.succeed(function (req, res, next) {
+				console.log('this should be called');
+				req.worked = true
+				next()
+			})
+
+			var app = express()
+			app.get('/test', test)
+
+			request(app)
+				.get('/test')
+				.end(function (err, res) {
+					assert.equal(res.body.ok, true);
+					done();
+				});
+
+		});
+
+	});
+
+});
+
 function succeed (req, res, next) {
 	req.ok = true;
 	next()

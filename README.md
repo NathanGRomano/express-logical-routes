@@ -81,16 +81,16 @@ var isValidUser = or(isAdmin, isSameUser)
 and then apply it
 
 ```javascript
-app.put('/user/:id/edit', getUser, isValidUser.succeed(editUser))
+app.put('/user/:id/edit', getUser, isValidUser().succeed(editUser))
 
-app.post('/user/:id/items', getUser, isValidUser.succeed(addItem))
+app.post('/user/:id/items', getUser, isValidUser().succeed(addItem))
 ```
 Here we used the "succeed()" method to editUser and addItem, we can also support a failure
 
 ```javascript
-app.put('/user/:id/edit', getUser, isValidUser.succeed(editUser).failure(goAway))
+app.put('/user/:id/edit', getUser, isValidUser().succeed(editUser).failure(goAway))
 
-app.post('/user/:id/items', getUser, isValidUser.succeed(addItem).failure(goAway))
+app.post('/user/:id/items', getUser, isValidUser().succeed(addItem).failure(goAway))
 ```
 
 Say we want to combine all this logic into a single object
