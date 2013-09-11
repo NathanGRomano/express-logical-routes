@@ -87,6 +87,9 @@ app.post('/user/:id/items', getUser, isValidUser().succeed(addItem))
 ```
 Here we used the "succeed()" method to editUser and addItem, we can also support a failure
 
+NOTE that we called isValidUser() with no arguments.  This creates a new middlware that we can attach
+succeed(), failure(), and then() methods to.
+
 ```javascript
 app.put('/user/:id/edit', getUser, isValidUser().succeed(editUser).failure(goAway))
 
