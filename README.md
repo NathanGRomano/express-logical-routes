@@ -140,10 +140,65 @@ validUser.failure(function (req, res, next) { /* do something with the errors */
 The errors are stored on the request object
 
 ```javascript
-every.failure(function (req, res, next) {
+validUser.failure(function (req, res, next) {
 	res.status(400).json(req.errors);
 });
 ```
+Say we have defined this middleware
+
+```javascript
+var validUser = every( isLoggedIn, isAllowed )
+	.failure(function (req, res, next) { res.redirect('/login') })
+```
+
+And we want to reuse it but change how we handle the failure.  
+For instance we want to return a JSON response for our 'v1' api and
+a redirect to the login page for the standard interface.
+
+```javascript
+app.get('/resource/:id', validUser, getResource); 
+app.get('/v1/resource/:id', validUser.failure(function (req, res, next) { 
+	res.status(403).json(new Error('You must be logged in')) }), getResource);
+```
+
+By doing this we are actually replacing the failure function for validUser.
+If we want to reuse the logic but modify either "failure", "succeed", or "then" methods,
+we can call the middleware without parameters to clone it.
+
+```javascript
+var validUserClone = validUser();
+```
+
+Now we can modify the "failure" method
+
+```javascript
+validUserClone.failure(function (req, res, next) {
+	res.status(403).json(new Error('You must be logged in'))
+})
+```
+
+We can easily take our previous example and do
+
+
+```javascript
+app.get('/resource/:id', validUser, getResource); 
+app.get('/v1/resource/:id', validUser().failure(function (req, res, next) { 
+	res.status(403).json(new Error('You must be logged in')) }), getResource);
+```
+
+Better yet
+
+```javascript
+app.get('/resource/:id', validUser, getResource); 
+app.get('/v1/resource/:id', validUser().failure(die), getResource);
+
+function die (req, res, next) {
+	res.status(403).json(new Error('You must be logged in')) }
+}
+```
+
+All of theses capabilities are inherited to the other logic operators
+
 
 #### then(fn)
 
