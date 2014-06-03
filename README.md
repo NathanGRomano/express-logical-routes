@@ -113,7 +113,7 @@ app.post('/user/:id/items', getAndValidateUser, addItem)
 
 ## API Documentation
 
-### fn(method)
+### #fn(method)
 
 This method will build us a function that will internally used the passed async method
 
@@ -126,7 +126,7 @@ var every = fn('every')
 
 This object has the following chainable methods 
 
-#### succeed(fn)
+#### #succeed(fn)
 
 When the operation succeeds, the passed method will be called
 
@@ -134,7 +134,7 @@ When the operation succeeds, the passed method will be called
 validUser.succeed(function (req, res, next) { /* do something */ next() })
 ```
 
-#### failure(fn)
+#### #failure(fn)
 
 When the operation fails, the passed method will be called
 
@@ -205,7 +205,7 @@ function die (req, res, next) {
 All of theses capabilities are inherited to the other logic operators
 
 
-#### then(fn)
+#### #then(fn)
 
 After the succeed() or failure() method is called then the fn() passed will be called
 
@@ -219,7 +219,7 @@ validUser
 	})
 ```
 
-### and(...)
+### #and(...)
 
 This method will produce an object with the same chainable functions as the result of fn('every')
 
@@ -232,7 +232,7 @@ var validUser = and (isLoggedIn, isAllowedToView)
 app.get('/resource/:id', validUser, getResource);
 ```
 
-### or(...)
+### #or(...)
 
 This method will produce an object with the same chainable functions as the result of fn('some')
 
@@ -242,7 +242,7 @@ var validUser = or (isAdmin, isAllowedToView )
 app.get('/resource/:id', validUser, getResource);
 ```
 
-### not(...)
+### #not(...)
 
 This method will produce an object with the same chainable functions as the result of fn('every') but only supports
 one middleware function
