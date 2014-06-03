@@ -1,17 +1,22 @@
-# Express Logical Routes (WIP)
+[![Build Status](https://travis-ci.org/NathanGRomano/express-logical-routes.svg?branch=master)](https://travis-ci.org/NathanGRomano/express-logical-routes.git)
+[![NPM version](https://badge.fury.io/js/express-logical-routes.svg)](http://badge.fury.io/js/express-logical-routes)
 
-A library built on top of async to apply business rules to routes as middleware.
+# Express Logical Routes
 
-Now you can reuse your business rules all over the place.
+A library for building middleware as a series of logic gates to reduce and
+reuse code.
 
 ## Getting Started
 
-     npm install
-     npm test
+    > npm install
+    > npm test
+
+## Typical Middleware
 
 Typically writing business rules in your routes may look like this.
 
 ```javascript
+
 app.put('/user/:id/edit', getUser, editUser )
 
 app.post('/user/:id/items', getUser, addItem )
@@ -106,7 +111,7 @@ app.put('/user/:id/edit', getAndValidateUser , editUser)
 app.post('/user/:id/items', getAndValidateUser, addItem)
 ```
 
-## API
+## API Documentation
 
 ### fn(method)
 

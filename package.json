@@ -1,6 +1,6 @@
 {
   "name": "express-logical-routes",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Nathan Romano <nathan.g.romano@gmail.com> (https://github.com/NathanGRomano)",
   "description": "A way of adding logic to your routes in a declarative way",
   "scripts": {
@@ -14,7 +14,12 @@
   "keywords": [
 		"express",
 		"logic",
-		"routes"
+		"routes",
+    "gate",
+    "and",
+    "or",
+    "not",
+    "middleware"
   ],
   "dependencies" : {
 		"async":"0.2.9"
@@ -26,7 +31,7 @@
 		"supertest":"0.7.1"
   },
   "bundledDependencies": [ ],  
-  "license": "MIT",
+  "license": "ISC",
   "engines": {
     "node": ">=0.6"
   }
