@@ -1,6 +1,6 @@
 {
   "name": "express-logical-routes",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "Nathan Romano <nathan.g.romano@gmail.com> (https://github.com/NathanGRomano)",
   "description": "A way of adding logic to your routes in a declarative way",
   "scripts": {
